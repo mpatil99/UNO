@@ -14,12 +14,13 @@ char message[20] = "";
 
 int anglePin = A0;
 int angle = 0;
+int dir = 0;
 
 
 //PID constants
-double kp = 2;
-double ki = 5;
-double kd = 1;
+double kp = 3;
+double ki = 0;
+double kd = 4;
  
 unsigned long currentTime, previousTime;
 double elapsedTime;
@@ -29,16 +30,16 @@ double input, output, setPoint;
 double cumError, rateError;
 
 int motorSpeed = 0;
-int motorDelta = 10;
+int motorDelta = 1;
 
 
 
 void setup() {
   Serial.begin(9600);
   AFMS.begin();
-  motor1->setSpeed(30);
-  motor2->setSpeed(30);
-  setPoint = 0;  //set point at zero degrees
+  motor1->setSpeed(0);
+  motor2->setSpeed(0);
+  setPoint = 875;  //set point at zero degrees
   previousTime = millis();
 }
 
@@ -49,17 +50,28 @@ void loop() {
   int r = analogRead(rightSensor);
   
 
-  output = computePID(angle);
-  motorSpeed += motorDelta * output;
+  output = computePID((double) angle);
+  motorSpeed =  (motorDelta * (int) output)/10;
   delay(100);
 
-  sprintf(message, "  %d %d ", l, r);
+  dir = motorSpeed > 0 ? 1: -1;
+  sprintf(message, "  %d %d %d %d %d %d", l, r, angle, (int)output, motorSpeed, dir);
   Serial.println(message);
 
-  motor1->setSpeed(motorSpeed > 0 ? motorSpeed : -motorSpeed);
-  motor2->setSpeed(motorSpeed > 0 ? motorSpeed : -motorSpeed);
-  motor1->run(motorSpeed > 0 ? BACKWARD : FORWARD);
-  motor2->run(motorSpeed > 0 ? BACKWARD : FORWARD);
+  if (motorSpeed > 5 ) {
+      motorSpeed = motorSpeed + 10;
+  } else if (motorSpeed < -5){
+    motorSpeed = -1*motorSpeed + 10;
+  }
+  
+  motorSpeed = (motorSpeed > 0 ? motorSpeed : -motorSpeed);
+  sprintf(message, " %d",motorSpeed);
+  Serial.println(message);
+
+  motor1->setSpeed(motorSpeed);
+  motor2->setSpeed(motorSpeed);
+  motor1->run(dir < 0 ? FORWARD : BACKWARD);
+  motor2->run(dir < 0 ? FORWARD : BACKWARD);
 
 
 //PID CONTROL LOOP
@@ -73,11 +85,13 @@ void loop() {
 
 
  
-double computePID(double inp){     
+double computePID(double inp){
+//        Serial.print(inp);     
         currentTime = millis();                //get current time
         elapsedTime = (double)(currentTime - previousTime);        //compute time elapsed from previous computation
         
         error = setPoint - inp;                                // determine error
+//        Serial.print(error);
         cumError += error * elapsedTime;                // compute integral
         rateError = (error - lastError)/elapsedTime;   // compute derivative
  
