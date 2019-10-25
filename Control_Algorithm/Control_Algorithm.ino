@@ -4,23 +4,22 @@
 
 // Create motor and motor shield objects
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
-Adafruit_DCMotor *motor = AFMS.getMotor(3);
-Adafruit_DCMotor *motor1 = AFMS.getMotor(4);
-//Adafruit_DCMotor *rightMotor = AFMS.getMotor(2);
+Adafruit_DCMotor *motor1 = AFMS.getMotor(3);
+Adafruit_DCMotor *motor2 = AFMS.getMotor(4);
 
 #define leftSensor A1
 #define rightSensor A2
 char message[20] = "";
 
 
-int analogPin = A0;
-int val = 0;
+int anglePin = A0;
+int angle = 0;
 
 
 //PID constants
-double kp = 2
-double ki = 5
-double kd = 1
+double kp = 2;
+double ki = 5;
+double kd = 1;
  
 unsigned long currentTime, previousTime;
 double elapsedTime;
@@ -29,35 +28,38 @@ double lastError;
 double input, output, setPoint;
 double cumError, rateError;
 
+int motorSpeed = 0;
+int motorDelta = 10;
+
 
 
 void setup() {
   Serial.begin(9600);
   AFMS.begin();
-  motor->setSpeed(30);
   motor1->setSpeed(30);
-  setPoint = 0;                     //set point at zero degrees
-
+  motor2->setSpeed(30);
+  setPoint = 0;  //set point at zero degrees
+  previousTime = millis();
 }
 
 void loop() {
-  vroom = 0;
-  val = analogRead(analogPin);  // read the input pin
-//  Serial.println(val);
+  angle = analogRead(anglePin);  // read the input pin
+//  Serial.println(angle);
   int l = analogRead(leftSensor);
   int r = analogRead(rightSensor);
+  
+
+  output = computePID(angle);
+  motorSpeed += motorDelta * output;
+  delay(100);
+
   sprintf(message, "  %d %d ", l, r);
   Serial.println(message);
 
-  motor->run(BACKWARD);
-  motor1->run(BACKWARD);
-//  motorSpeed = 500 - val
-//  if (val > 500) {
-//    motor->run(BACKWARD);
-//  }
-//  else {
-//    motor->run(FORWARD);
-//  }
+  motor1->setSpeed(motorSpeed > 0 ? motorSpeed : -motorSpeed);
+  motor2->setSpeed(motorSpeed > 0 ? motorSpeed : -motorSpeed);
+  motor1->run(motorSpeed > 0 ? BACKWARD : FORWARD);
+  motor2->run(motorSpeed > 0 ? BACKWARD : FORWARD);
 
 
 //PID CONTROL LOOP
@@ -68,12 +70,14 @@ void loop() {
 
 }
 
+
+
  
 double computePID(double inp){     
         currentTime = millis();                //get current time
         elapsedTime = (double)(currentTime - previousTime);        //compute time elapsed from previous computation
         
-        error = Setpoint - inp;                                // determine error
+        error = setPoint - inp;                                // determine error
         cumError += error * elapsedTime;                // compute integral
         rateError = (error - lastError)/elapsedTime;   // compute derivative
  
