@@ -46,6 +46,7 @@ void AS5048A::begin(){
 
 	//setup pins
 	pinMode(this->_cs, OUTPUT);
+  Serial.print(this->_cs);
 
 	//SPI has an internal SPI-device counter, it is possible to call "begin()" from different devices
 	SPI.begin();
@@ -186,6 +187,8 @@ String AS5048A::getDiagnostic(){
  */
 String AS5048A::getErrors(){
 	uint16_t error = AS5048A::read(AS5048A_CLEAR_ERROR_FLAG);
+  Serial.print("Error Value");
+  Serial.println(error);
 	if (error & AS5048A_ERROR_PARITY_FLAG){
 		return "Parity Error";
 	}

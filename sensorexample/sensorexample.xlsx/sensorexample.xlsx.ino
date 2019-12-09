@@ -11,7 +11,7 @@
 
    You should also assign a unique ID to this sensor for use with
    the Adafruit Sensor API so that you can identify this particular
-   sensor in any data logs, etc.  To assign a unique ID, simply
+   sensor in any data logs, etc.  To assign a unique ID, simpLOWly
    provide an appropriate value in the constructor below (12345
    is used by default in this example).
 

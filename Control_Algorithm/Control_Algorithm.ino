@@ -44,41 +44,45 @@ void setup() {
 }
 
 void loop() {
-  angle = analogRead(anglePin);  // read the input pin
-//  Serial.println(angle);
-  int l = analogRead(leftSensor);
-  int r = analogRead(rightSensor);
-  
-
-  output = computePID((double) angle);
-  motorSpeed =  (motorDelta * (int) output)/10;
-  delay(100);
-
-  dir = motorSpeed > 0 ? 1: -1;
-  sprintf(message, "  %d %d %d %d %d %d", l, r, angle, (int)output, motorSpeed, dir);
-  Serial.println(message);
-
-  if (motorSpeed > 5 ) {
-      motorSpeed = motorSpeed + 10;
-  } else if (motorSpeed < -5){
-    motorSpeed = -1*motorSpeed + 10;
-  }
-  
-  motorSpeed = (motorSpeed > 0 ? motorSpeed : -motorSpeed);
-  sprintf(message, " %d",motorSpeed);
-  Serial.println(message);
-
-  motor1->setSpeed(motorSpeed);
-  motor2->setSpeed(motorSpeed);
-  motor1->run(dir < 0 ? FORWARD : BACKWARD);
-  motor2->run(dir < 0 ? FORWARD : BACKWARD);
-
-
-//PID CONTROL LOOP
-//  input = analogRead(A0);                //read from rotary encoder connected to A0
-//  output = computePID(input);
+  digitalWrite(0,HIGH);
+  delay(1000);
+  digitalWrite(0,LOW);
+  delay(1000);
+//  angle = analogRead(anglePin);  // read the input pin
+////  Serial.println(angle);
+//  int l = analogRead(leftSensor);
+//  int r = analogRead(rightSensor);
+//  
+//
+//  output = computePID((double) angle);
+//  motorSpeed =  (motorDelta * (int) output)/10;
 //  delay(100);
-//  analogWrite(3, output);                //control the motor based on PID value
+//
+//  dir = motorSpeed > 0 ? 1: -1;
+//  sprintf(message, "  %d %d %d %d %d %d", l, r, angle, (int)output, motorSpeed, dir);
+//  Serial.println(message);
+//
+//  if (motorSpeed > 5 ) {
+//      motorSpeed = motorSpeed + 10;
+//  } else if (motorSpeed < -5){
+//    motorSpeed = -1*motorSpeed + 10;
+//  }
+//  
+//  motorSpeed = (motorSpeed > 0 ? motorSpeed : -motorSpeed);
+//  sprintf(message, " %d",motorSpeed);
+//  Serial.println(message);
+//
+//  motor1->setSpeed(motorSpeed);
+//  motor2->setSpeed(motorSpeed);
+//  motor1->run(dir < 0 ? FORWARD : BACKWARD);
+//  motor2->run(dir < 0 ? FORWARD : BACKWARD);
+//
+//
+////PID CONTROL LOOP
+////  input = analogRead(A0);                //read from rotary encoder connected to A0
+////  output = computePID(input);
+////  delay(100);
+////  analogWrite(3, output);                //control the motor based on PID value
 
 }
 

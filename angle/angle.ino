@@ -7,6 +7,7 @@ void setup()
 {
 	Serial.begin(19200);
 	angleSensor.begin();
+  pinMode(12, INPUT);
 }
 
 void loop()
@@ -16,10 +17,10 @@ void loop()
 	float val = angleSensor.getRotationInDegrees();
 	Serial.print("\nGot rotation of: ");
 	Serial.println(val);
-	Serial.println("State: ");
+	Serial.println("\nState: ");
 	angleSensor.printState();
-	Serial.println("Errors: ");
+	Serial.println("\nErrors: ");
 	Serial.println(angleSensor.getErrors());
-	Serial.println("Diagnostics: ");
+	Serial.println("\nDiagnostics: ");
 	Serial.println(angleSensor.getDiagnostic());
 }
